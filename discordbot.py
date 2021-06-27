@@ -11,6 +11,13 @@ lang = os.getenv('DISCORD_BOT_LANG', default='ja')
 token = os.environ['DISCORD_BOT_TOKEN']
 client = commands.Bot(command_prefix=prefix)
 
+# 追加
+# ffmpeg のオプション 再生速度を1.75倍に
+ffmpeg_options = {
+    'options': '-vn -af "atempo=1.75"'
+}
+# 追加ここまで
+
 @client.event
 async def on_ready():
     presence = f'{prefix}ヘルプ | 0/{len(client.guilds)}サーバー'
@@ -76,16 +83,20 @@ async def on_message(message):
                 while text[-2:-1] == 'w' or text[-2:-1] == 'W' or text[-2:-1] == 'ｗ' or text[-2:-1] == 'W':
                     text = text[:-1]
                 text = text[:-1] + '、ワラ'
+            # 以下改変
+            # 90文字を超えていたらカットして以下略とつけさせる
+            if len(text) >= 90:
+                text = text[:90]
+                text += '、以下略'
             if message.attachments:
                 text += '、添付ファイル'
-            if len(text) < 100:
-                s_quote = urllib.parse.quote(text)
-                mp3url = f'http://translate.google.com/translate_tts?ie=UTF-8&q={s_quote}&tl={lang}&client=tw-ob'
-                while message.guild.voice_client.is_playing():
-                    await asyncio.sleep(0.5)
-                message.guild.voice_client.play(discord.FFmpegPCMAudio(mp3url))
-            else:
-                await message.channel.send('100文字以上は読み上げできません。')
+            s_quote = urllib.parse.quote(text)
+            mp3url = f'http://translate.google.com/translate_tts?ie=UTF-8&q={s_quote}&tl=ja&client=tw-ob'
+            while message.guild.voice_client.is_playing():
+                await asyncio.sleep(0.5)
+            # ffmpeg のオプションを追加
+            message.guild.voice_client.play(discord.FFmpegPCMAudio(mp3url, **ffmpeg_options))
+            # 改変ここまで
         else:
             pass
     await client.process_commands(message)
