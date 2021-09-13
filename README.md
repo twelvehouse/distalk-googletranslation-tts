@@ -5,4 +5,6 @@ Discord TTS on Heroku powered by Google Translation Text-to-Speech API.
 
 # フォーク元からの変更点
 ffmpegに再生速度のオプションを追加(1.75倍)
-100文字を超えたチャットも省略して読み上げるように変更(90文字でカットする)
+100文字を超えたチャットも省略して読み上げるように変更(90文字でカットする)  
+  
+不具合あると思います
